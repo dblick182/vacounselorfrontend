@@ -1,0 +1,19 @@
+module.exports = {
+  presets: [
+    '@babel/preset-react',
+    '@babel/preset-typescript',
+    [
+      '@babel/preset-env',
+      {
+        // Allow importing core-js in entrypoint and use browserlist to select polyfills
+        useBuiltIns: 'entry',
+        // Set the corejs version we are using to avoid warnings in console
+        // This will need to change once we upgrade to corejs@3
+        corejs: 3,
+        // Exclude transforms that make all code slower
+        exclude: ['transform-typeof-symbol'],
+      },
+    ],
+  ],
+  plugins: ['@babel/proposal-class-properties', '@babel/plugin-syntax-dynamic-import'],
+};

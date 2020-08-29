@@ -1,0 +1,86 @@
+# A build pipeline to verify that code merged to Master is valid,
+# and produce the build artifacts for each environment needed for the release pipelines
+variables:
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'wwlsharedacrtestplg'
+  projectFolder: '$(System.DefaultWorkingDirectory)'
+  buildOutputFolder: '$(projectFolder)/dist/'
+  deploymentDropFolder: '$(projectFolder)/config/deployment/'
+  dockerfilePath: 'Dockerfile-prod'
+  containerRegistry: 'wwlsharedacrtestplg.azurecr.io'
+  imageRepository: 'plgteamsappui'
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+trigger:
+  branches:
+    include:
+      - 'master'
+
+pool:
+  vmImage: $(vmImageName)
+  demands: npm
+
+steps:
+  - task: npmAuthenticate@0
+    displayName: 'npm Authenticate .npmrc'
+    inputs:
+      workingFile: .npmrc
+      customEndpoint: 'learnx-ui'
+  - script: |
+      docker build -t $(imageRepository):$(tag) -f $(dockerfilePath)  --target tests .
+      echo 'Creating a container for image $(imageRepository):$(tag)'
+      docker create -ti --name teamsappui $(imageRepository):$(tag)
+      echo 'Copying the _coverage folder from container to TestResults directory $(Common.TestResultsDirectory)'
+      docker cp teamsappui:/app/_coverage $(Common.TestResultsDirectory)
+    displayName: 'Execute Lint & Unit tests'
+  - task: PublishTestResults@2
+    displayName: 'Publish Test Results unit-test-results.xml'
+    inputs:
+      testResultsFormat: JUnit
+      testResultsFiles: '**/unit-test-results.xml'
+      searchFolder: '$(Common.TestResultsDirectory)'
+      testRunTitle: 'JUnit Test Results'
+      failTaskOnFailedTests: true
+  - task: PublishCodeCoverageResults@1
+    displayName: 'Publish Code Coverage Reports'
+    inputs:
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(Common.TestResultsDirectory)/**/cobertura-coverage.xml'
+      reportDirectory: '$(Common.TestResultsDirectory)/_coverage'
+      failIfCoverageEmpty: true
+  - task: Docker@2
+    displayName: Build UI image
+    inputs:
+      command: build
+      repository: $(imageRepository)
+      containerRegistry: $(dockerRegistryServiceConnection)
+      dockerfile: $(dockerfilePath)
+      tags: |
+        $(tag)
+      arguments: --target uifinal
+  - task: Docker@2
+    displayName: Push UI image to container registry
+    inputs:
+      command: push
+      repository: $(imageRepository)
+      containerRegistry: $(dockerRegistryServiceConnection)
+      tags: |
+        $(tag)
+    condition: or(and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['tag'],'latest'))
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: './config/deployment'
+      Contents: '**'
+      TargetFolder: '$(Build.ArtifactStagingDirectory)/deployment'
+      CleanTargetFolder: true
+      OverWrite: true
+    condition: or(and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['tag'],'latest'))
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+      ArtifactName: 'drop'
+      publishLocation: 'Container'
+    condition: or(and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master')), ne(variables['tag'],'latest'))

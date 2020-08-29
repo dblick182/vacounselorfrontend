@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project-name": {
+      "value": "plg"
+    },
+    "environment": {
+      "value": "test"
+    },
+    "ui-site-name": {
+      "value": "PLG Teams App [BVT]"
+    },
+    "ui-auth-authority": {
+      "value": "https://login.microsoftonline.com/72f988bf-86f1-41af-91ab-2d7cd011db47/"
+    },
+    "orchestrator-url": {
+      "value": "https://wwltestplgorchestrator.azurewebsites.net"
+    },
+    "promo-video-url": {
+      "value": "https://msit.microsoftstream.com/embed/video/9ca10c4a-104a-4aa0-82fe-8ccb75cf6216?autoplay=false&showinfo=false"
+    },
+    "ai-instrumentation-key": {
+      "value": "a27457e3-1b23-48ed-9b59-ec50e26bde01"
+    },
+    "blob-account-name": {
+      "value": "wwltestplgorchblob"
+    },
+    "acr-registry-username": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/3523a6d2-3e1d-43ca-b406-d10839c36760/resourcegroups/shared-testplg-rg/providers/Microsoft.KeyVault/vaults/wwltestplgdeployment"
+        },
+        "secretName": "acr-registry-username"
+      }
+    },
+    "acr-registry-password": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/3523a6d2-3e1d-43ca-b406-d10839c36760/resourcegroups/shared-testplg-rg/providers/Microsoft.KeyVault/vaults/wwltestplgdeployment"
+        },
+        "secretName": "acr-registry-password"
+      }
+    },
+    "hosting-plan-sku" : {
+      "value": "P1v2"
+    }
+  }
+}

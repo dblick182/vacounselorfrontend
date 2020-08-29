@@ -1,0 +1,17 @@
+steps:
+  - task: Cache@2
+    inputs:
+      key: '"node_modules" | "$(Agent.OS)" | package-lock.json'
+      restoreKeys: |
+        "node_modules" | "$(Agent.OS)"
+        "node_modules"
+      path: node_modules
+      cacheHitVar: CACHE_RESTORED
+    displayName: Cache npm
+
+  - task: Npm@1
+    displayName: 'i'
+    condition: ne(variables.CACHE_RESTORED, 'true')
+    inputs:
+      command: 'custom'
+      customCommand: 'i --no-progress'

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project-name": {
+      "value": "plg"
+    },
+    "environment": {
+      "value": "griffith"
+    },
+    "ui-site-name": {
+      "value": "Griffith Teams App"
+    },
+    "ui-auth-authority": {
+      "value": "https://login.microsoftonline.com/5a7cc8ab-a4dc-4f9b-bf60-66714049ad62/"
+    },
+    "orchestrator-url": {
+      "value": "https://wwlgriffithorchestrator.azurewebsites.net"
+    },
+    "promo-video-url": {
+      "value": "https://web.microsoftstream.com/embed/video/5790a39f-ae26-48d3-b874-a3b54a47e744?autoplay=false&showinfo=false"
+    },
+    "ai-instrumentation-key": {
+      "value": "82658718-c390-441c-a017-fc88831261b1"
+    },
+    "blob-account-name": {
+      "value": "wwlgriffithorchblob"
+    },
+    "acr-domain-name": {
+      "value": "wwlsharedacrprod.azurecr.io"
+    },
+    "acr-registry-username": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/ca9aeafe-66c6-4780-9863-ce3d800fb7b4/resourcegroups/shared-griffith-rg/providers/Microsoft.KeyVault/vaults/wwlgriffithdeployment"
+        },
+        "secretName": "acr-registry-username"
+      }
+    },
+    "acr-registry-password": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/ca9aeafe-66c6-4780-9863-ce3d800fb7b4/resourcegroups/shared-griffith-rg/providers/Microsoft.KeyVault/vaults/wwlgriffithdeployment"
+        },
+        "secretName": "acr-registry-password"
+      }
+    },
+    "hosting-plan-sku" : {
+      "value": "P1v2"
+    }
+  }
+}

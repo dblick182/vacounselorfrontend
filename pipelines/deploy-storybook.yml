@@ -1,0 +1,24 @@
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  npm_config_cache: $(Pipeline.Workspace)/.npm
+name: Deploy learnx-ui Storybook
+
+jobs:
+  - job: deploy
+    displayName: 'Storybook'
+    steps:
+      - template: install-dependencies.yml
+      - task: Npm@1
+        displayName: 'build-storybook'
+        inputs:
+          command: 'custom'
+          customCommand: 'run build-storybook'
+      - task: AzureCLI@1
+        displayName: deploy-storybook
+        inputs:
+          azureSubscription: InnovationLab
+          scriptLocation: inlineScript
+          inlineScript: |
+            az storage blob delete-batch --source 'componentexplorer' --account-name $(AZURE_STORAGE_ACCOUNT) --account-key $(AZURE_STORAGE_KEY) --pattern '$(Build.SourceBranch)/*'
+            az storage blob upload-batch --destination 'componentexplorer' --source storybook-static --account-name $(AZURE_STORAGE_ACCOUNT) --account-key $(AZURE_STORAGE_KEY) --destination-path $(Build.SourceBranch)

@@ -1,0 +1,95 @@
+// Remove this media query once high contrast mode is fixed in Fluent-UI/Edge
+// https://github.com/microsoft/fluentui/issues/11742
+@media screen and (-ms-high-contrast: active) {
+  .ms-Checkbox-checkbox {
+    -ms-high-contrast-adjust: none;
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #f2f2f2;
+  // Remove default browser styles on focus
+  *:focus {
+    outline: 0;
+  }
+
+  a:focus,
+  [role='button']:focus {
+    outline: black solid 1px;
+
+    @media (-ms-high-contrast: active) {
+      outline-color: ButtonHighlight;
+    }
+  }
+
+  .ms-Suggestions-container {
+    z-index: 100;
+  }
+}
+
+.side-bar-title {
+  margin: 0;
+  padding: 0;
+  font-size: 20px;
+  font-weight: normal;
+}
+
+.side-bar-subtitle {
+  margin-top: 8px;
+  padding: 0;
+  font-size: 14px;
+  font-weight: normal;
+  font-style: normal;
+  font-stretch: normal;
+  line-height: 1.33;
+}
+
+a.ms-Button,
+button.ms-Button {
+  margin-left: 0;
+}
+
+.side-bar-content {
+  margin: 8px 0 32px;
+
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      margin: 4px 0 0 24px;
+    }
+  }
+}
+
+.ms-Button {
+  margin-left: 30px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.sr-only-focusable:active,
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+}
+
+.global-link {
+  color: #0062af;
+  text-decoration: none;
+}

@@ -1,0 +1,58 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project-name": {
+      "value": "plg"
+    },
+    "environment": {
+      "value": "unsw"
+    },
+    "ui-site-name": {
+      "value": "UNSW Teams App"
+    },
+    "ui-auth-authority": {
+      "value": "https://login.microsoftonline.com/3ff6cfa4-e715-48db-b8e1-0867b9f9fba3/"
+    },
+    "orchestrator-url": {
+      "value": "https://wwlunsworchestrator.azurewebsites.net"
+    },
+    "promo-video-url": {
+      "value": "https://web.microsoftstream.com/embed/video/4571ea77-f35a-4b73-912e-d39af50b44f0?autoplay=false&showinfo=false"
+    },
+    "ai-instrumentation-key": {
+      "value": "468ebd80-f10f-40a9-9237-61f02d475acf"
+    },
+    "global-instrumentation-key": {
+      "value": "5544425d-d713-44f7-94a0-884fac71ac3d"
+    },
+    "blob-account-name": {
+      "value": "wwlunsworchblob"
+    },
+    "acr-domain-name": {
+      "value": "wwlsharedacrprod.azurecr.io"
+    },
+    "li-dual-bind-query": {
+      "value": "&dualbind=false"
+    },
+    "acr-registry-username": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/de93eb29-7b3a-415b-9be0-adbf6ddcf73b/resourcegroups/studentAdvising-lagroPLGShared-pilot/providers/Microsoft.KeyVault/vaults/wwlunswdeployment"
+        },
+        "secretName": "acr-registry-username"
+      }
+    },
+    "acr-registry-password": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/de93eb29-7b3a-415b-9be0-adbf6ddcf73b/resourcegroups/studentAdvising-lagroPLGShared-pilot/providers/Microsoft.KeyVault/vaults/wwlunswdeployment"
+        },
+        "secretName": "acr-registry-password"
+      }
+    },
+    "hosting-plan-sku" : {
+      "value": "P1v2"
+    }
+  }
+}

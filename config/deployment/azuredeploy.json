@@ -1,0 +1,338 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project-name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "prefixparam": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "wwl"
+    },
+    "environment": {
+      "type": "string",
+      "minLength": 1
+    },
+    "hosting-plan-sku": {
+      "type": "string",
+      "defaultValue": "S1",
+      "allowedValues": [
+        "S1",
+        "S2",
+        "S3",
+        "P1v2",
+        "P2v2",
+        "P3v2"
+      ]
+    },
+    "acr-domain-name": {
+      "type": "string",
+      "defaultValue": "wwlsharedacrtestplg.azurecr.io"
+    },
+    "acr-image": {
+      "type": "string",
+      "defaultValue": "plgteamsappui:latest"
+    },
+    "acr-registry-username": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acr-registry-password": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ui-site-name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ui-auth-authority": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ui-auth-clientid": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "debe0394-e135-4ec5-92e8-4c8dd8d81ef1"
+    },
+    "orchestrator-url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "promo-video-url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ai-instrumentation-key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "global-instrumentation-key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "blob-account-name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "li-dual-bind-query": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "&dualbind=true&dualbindpat=true"
+    }
+  },
+  "variables": {
+    "hosting-plan-name": "[concat(parameters('prefixparam'), '-', parameters('environment'), '-', parameters('project-name'), 'plan')]",
+    "app-name": "[concat(parameters('prefixparam'), '-', parameters('environment'), '-', parameters('project-name'), '-ui')]",
+    "app-url": "[concat('https://', variables('app-name'), '.azurewebsites.net')]",
+    "app-name-stage": "[concat(parameters('prefixparam'), '-', parameters('environment'), '-', parameters('project-name'), '-ui-stage')]",
+    "app-url-stage": "[concat('https://', variables('app-name-stage'), '.azurewebsites.net')]",
+    "acr-image-name": "[concat(parameters('acr-domain-name'), '/', parameters('acr-image'))]",
+    "acr-registry-url": "[concat('https://', parameters('acr-domain-name'))]"
+  },
+  "resources": [
+    {
+      "name": "[variables('hosting-plan-name')]",
+      "type": "Microsoft.Web/serverfarms",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2015-08-01",
+      "kind": "linux",
+      "sku": {
+        "name": "[parameters('hosting-plan-sku')]"
+      },
+      "dependsOn": [
+      ],
+      "properties": {
+        "name": "[variables('hosting-plan-name')]",
+        "reserved": true
+      }
+    },
+    {
+      "type": "microsoft.insights/autoscalesettings",
+      "apiVersion": "2014-04-01",
+      "name": "[concat(parameters('project-name'), 'scalingsetting')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]"
+      ],
+      "properties": {
+        "profiles": [
+          {
+            "name": "Scale Out/In CPU and Memory",
+            "capacity": {
+              "minimum": "1",
+              "maximum": "5",
+              "default": "1"
+            },
+            "rules": [
+              {
+                "metricTrigger": {
+                  "metricName": "CpuPercentage",
+                  "metricNamespace": "microsoft.web/serverfarms",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT10M",
+                  "timeAggregation": "Average",
+                  "operator": "GreaterThan",
+                  "threshold": 70,
+                  "dimensions": [
+                  ],
+                  "dividePerInstance": false
+                },
+                "scaleAction": {
+                  "direction": "Increase",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT5M"
+                }
+              },
+              {
+                "metricTrigger": {
+                  "metricName": "MemoryPercentage",
+                  "metricNamespace": "microsoft.web/serverfarms",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT10M",
+                  "timeAggregation": "Average",
+                  "operator": "GreaterThan",
+                  "threshold": 90,
+                  "dimensions": [
+                  ],
+                  "dividePerInstance": false
+                },
+                "scaleAction": {
+                  "direction": "Increase",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT5M"
+                }
+              },
+              {
+                "metricTrigger": {
+                  "metricName": "CpuPercentage",
+                  "metricNamespace": "microsoft.web/serverfarms",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT10M",
+                  "timeAggregation": "Average",
+                  "operator": "LessThanOrEqual",
+                  "threshold": 20,
+                  "dimensions": [
+                  ],
+                  "dividePerInstance": false
+                },
+                "scaleAction": {
+                  "direction": "Decrease",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT5M"
+                }
+              },
+              {
+                "metricTrigger": {
+                  "metricName": "MemoryPercentage",
+                  "metricNamespace": "microsoft.web/serverfarms",
+                  "metricResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]",
+                  "timeGrain": "PT1M",
+                  "statistic": "Average",
+                  "timeWindow": "PT10M",
+                  "timeAggregation": "Average",
+                  "operator": "LessThanOrEqual",
+                  "threshold": 80,
+                  "dimensions": [
+                  ],
+                  "dividePerInstance": false
+                },
+                "scaleAction": {
+                  "direction": "Decrease",
+                  "type": "ChangeCount",
+                  "value": "1",
+                  "cooldown": "PT5M"
+                }
+              }
+            ]
+          }
+        ],
+        "enabled": true,
+        "name": "[concat(parameters('project-name'), 'scalingsetting')]",
+        "targetResourceUri": "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]"
+      }
+    },
+    {
+      "apiVersion": "2015-08-01",
+      "type": "Microsoft.Web/sites",
+      "name": "[variables('app-name')]",
+      "location": "[resourceGroup().location]",
+      "kind": "app,linux,container",
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', variables('hosting-plan-name'))]"
+      ],
+      "properties": {
+        "name": "[variables('app-name')]",
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms',variables('hosting-plan-name'))]",
+        "siteConfig": {
+          "alwaysOn": true
+        }
+      },
+      "resources": [
+        {
+          "apiVersion": "2015-08-01",
+          "name": "appsettings",
+          "type": "config",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('app-name'))]"
+          ],
+          "properties": {
+            "REACT_SITE_NAME": "[parameters('ui-site-name')]",
+            "REACT_AUTHENTICATION_AUTHORITY": "[parameters('ui-auth-authority')]",
+            "REACT_AUTHENTICATION_CLIENT_ID": "[parameters('ui-auth-clientid')]",
+            "REACT_ORCHESTRATOR_BASE_URL": "[parameters('orchestrator-url')]",
+            "REACT_VIDEO_URL": "[parameters('promo-video-url')]",
+            "REACT_APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('ai-instrumentation-key')]",
+            "REACT_TELEMETRY_KEY": "[parameters('global-instrumentation-key')]",
+            "REACT_BLOB_STORAGE_ACCOUNT": "[parameters('blob-account-name')]",
+            "REACT_DUAL_BIND_QUERY": "[parameters('li-dual-bind-query')]",
+            "REACT_UI_BASE_URL": "[variables('app-url')]",
+            "DOCKER_REGISTRY_SERVER_URL": "[variables('acr-registry-url')]",
+            "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acr-registry-username')]",
+            "DOCKER_REGISTRY_SERVER_PASSWORD": "[parameters('acr-registry-password')]",
+            "WEBSITES_PORT": "80"
+          }
+        },
+        {
+          "name": "slotConfigNames",
+          "type": "config",
+          "apiVersion": "2015-08-01",
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/sites', variables('app-name'))]"
+          ],
+          "tags": {
+            "displayName": "slotConfigNames"
+          },
+          "properties": {
+            "appSettingNames": [
+              "REACT_SITE_NAME",
+              "REACT_ORCHESTRATOR_BASE_URL",
+              "REACT_APPINSIGHTS_INSTRUMENTATIONKEY",
+              "REACT_TELEMETRY_KEY",
+              "REACT_BLOB_STORAGE_ACCOUNT",
+              "REACT_UI_BASE_URL"
+            ]
+          }
+        },
+        {
+          "apiVersion": "2015-08-01",
+          "name": "stage",
+          "type": "slots",
+          "tags": {
+            "displayName": "stage"
+          },
+          "location": "[resourceGroup().location]",
+          "identity": {
+            "type": "SystemAssigned"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.Web/Sites', variables('app-name'))]"
+          ],
+          "properties": {
+          },
+          "resources": [
+            {
+              "apiVersion": "2015-08-01",
+              "name": "appsettings",
+              "type": "config",
+              "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites/Slots', variables('app-name'), 'stage')]"
+              ],
+              "properties": {
+                "REACT_SITE_NAME": "[parameters('ui-site-name')]",
+                "REACT_AUTHENTICATION_AUTHORITY": "[parameters('ui-auth-authority')]",
+                "REACT_AUTHENTICATION_CLIENT_ID": "[parameters('ui-auth-clientid')]",
+                "REACT_ORCHESTRATOR_BASE_URL": "[parameters('orchestrator-url')]",
+                "REACT_VIDEO_URL": "[parameters('promo-video-url')]",
+                "REACT_APPINSIGHTS_INSTRUMENTATIONKEY": "[parameters('ai-instrumentation-key')]",
+                "REACT_TELEMETRY_KEY": "[parameters('global-instrumentation-key')]",
+                "REACT_BLOB_STORAGE_ACCOUNT": "[parameters('blob-account-name')]",
+                "REACT_DUAL_BIND_QUERY": "[parameters('li-dual-bind-query')]",
+                "REACT_UI_BASE_URL": "[variables('app-url-stage')]",
+                "DOCKER_REGISTRY_SERVER_URL": "[variables('acr-registry-url')]",
+                "DOCKER_REGISTRY_SERVER_USERNAME": "[parameters('acr-registry-username')]",
+                "DOCKER_REGISTRY_SERVER_PASSWORD": "[parameters('acr-registry-password')]",
+                "WEBSITES_PORT": "80"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "outputs": {
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project-name": {
+      "value": "plg"
+    },
+    "environment": {
+      "value": "tamu"
+    },
+    "ui-site-name": {
+      "value": "TAMU Teams App"
+    },
+    "ui-auth-authority": {
+      "value": "https://login.microsoftonline.com/99d8f921-6735-4783-9edb-5cbe3acbc736/"
+    },
+    "orchestrator-url": {
+      "value": "https://wwltamuorchestrator.azurewebsites.net"
+    },
+    "promo-video-url": {
+      "value": "https://web.microsoftstream.com/embed/video/aa605631-40a5-4ca1-a5fe-c5ad6864770b?autoplay=false&showinfo=false"
+    },
+    "ai-instrumentation-key": {
+      "value": "2d25860d-7312-4d5a-9c35-4a93f6e23dc2"
+    },
+    "blob-account-name": {
+      "value": "wwltamuorchblob"
+    },
+    "acr-domain-name": {
+      "value": "wwlsharedacrprod.azurecr.io"
+    },
+    "acr-registry-username": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/91deff71-16e5-4b29-aea7-7aac8289f0ac/resourcegroups/shared-tamu-rg/providers/Microsoft.KeyVault/vaults/wwltamudeployment"
+        },
+        "secretName": "acr-registry-username"
+      }
+    },
+    "acr-registry-password": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/91deff71-16e5-4b29-aea7-7aac8289f0ac/resourcegroups/shared-tamu-rg/providers/Microsoft.KeyVault/vaults/wwltamudeployment"
+        },
+        "secretName": "acr-registry-password"
+      }
+    },
+    "hosting-plan-sku" : {
+      "value": "P1v2"
+    }
+  }
+}
