@@ -220,7 +220,7 @@ const EmailModal = ({ firstName, lastName, onDismissModal, lookup }: { firstName
           <Spinner size={SpinnerSize.large} />
           <ul>
             <li>{ !senators ? "Searching for your senators" : "Found your senators."} </li>
-            {!representatives && <li>Searching for your representatives.</li>}
+            <li>{!representatives ? "Searching for your representatives." : "Found your representatives."}</li>
           </ul>
         </SpinnerContainer>
       )}
