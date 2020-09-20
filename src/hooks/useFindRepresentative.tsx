@@ -1,34 +1,34 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import BaseApi from "../components/Api/BaseApi";
 import { ILookupRepresentative } from "./types";
-const url = `https://cors-anywhere.herokuapp.com/ziplook.house.gov/htbin/findrep_house?ADDRLK86154111086154111`;
-//method: POST
-//Content-Type: application/x-www-form-urlencoded
-/** Form Data
-street: 2149 NW Shy Bear Way
-city: Issaquah
-state: WAWashington
-Submit: FIND YOUR REP BY ADDRESS
-ZIP: 98027
- */
+const url = `https://replookup.azurewebsites.net/api/findrep?code=ngaaTr3Zy37oRPvQHeOIgfFEtKOrL6m1gQTmaUKSKIRqyaskHjixDA==`;
+export interface IRepresentative {
+  email: string;
+  first_name: string;
+  last_name: string;
+}
+export interface IRepResponse {
+  representatives: IRepresentative[]
+}
 
 export const useFindRepresentative = ({ zip, street, city, state }: ILookupRepresentative) => {
-  return useMemo(() => {
-    const data = new FormData();
-    data.append('Zip', zip)
-    data.append('street', street)
-    data.append('city', city)
-    data.append('state', state)
-    data.append('Submit', 'FIND YOUR REP BY ADDRESS')
+  const [representatives, setReps] = useState<IRepresentative[] | undefined>()
+  useMemo(() => {    
+    const data = {
+      zip,
+      street,
+      city,
+      state,
+    }
     //request the data
     BaseApi.request(url, {
       method: "POST",
       headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/json'
       },
       data
     }).then((resp) => {
-      console.log(resp)
+      setReps((resp.data as IRepResponse).representatives)
     })
   }, [
     zip,
@@ -36,4 +36,5 @@ export const useFindRepresentative = ({ zip, street, city, state }: ILookupRepre
     city,
     state
   ])
+  return representatives
 }

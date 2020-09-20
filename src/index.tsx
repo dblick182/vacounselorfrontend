@@ -8,7 +8,7 @@ import ReactDOM from 'react-dom';
 import './index.scss';
 import styled from "styled-components";
 import { useTextField } from "./hooks/useTextField";
-import { useFindRepresentative } from "./hooks/useFindRepresentative";
+import { IRepresentative, useFindRepresentative } from "./hooks/useFindRepresentative";
 import { useFindSenator, ISenatorMember } from "./hooks/useFindSenator"
 import 'semantic-ui-css/semantic.min.css'
 import { useStatePicker } from './hooks/useStatePicker';
@@ -52,8 +52,56 @@ const SpinnerContainer = styled.div`
   flex-direction:column;
   justify-content:center;
 `
+const RepresentativeModalContent = ({ firstName, lastName, rep, onDismissModal }: { firstName: string, lastName: string, rep: IRepresentative, onDismissModal: () => void }) => {
+  const bodyRef = useRef<any>();
+  const onEmailClick = useCallback(() => {
+    if (bodyRef.current) {
+      /* Select the text field */
+      bodyRef.current.select();
+      bodyRef.current.setSelectionRange(0, 99999); /*For mobile devices*/
 
-const ModalContent = ({ firstName, lastName, senator, onDismissModal }: { firstName: string, lastName: string, senator: ISenatorMember, onDismissModal: () => void }) => {
+      /* Copy the text inside the text field */
+      document.execCommand("copy");
+
+      /* Alert the copied text */
+      alert("Copied the text to your clipboard");
+
+      /* Open link to senator/congressperson page */
+      window.open(emailTo, "_blank")
+    }
+  }, [bodyRef.current])
+  const { TextField: EmailField, value: emailTo } = useTextField(rep.email);
+  const { TextField: BodyField, value: finalBody } = useTextField(`  The Honorable ${rep.first_name} ${rep.last_name}
+
+  Representative ${rep.last_name}:
+
+    I am one of your constituents who is very concerned about the quality of care for veterans that is being compromised in the VA’s VET Center Program due to excessive clinical production standards that were imposed on counselors by Readjustment Counseling Service (RCS) management, which has adversely effected the health and well-being of counselors and degraded their ability to provide quality services to veterans.  These issues were reported by national media organizations, and the broadcasts with associated web articles can be viewed through links which are available on a Facebook Page that was established to raise awareness regarding this distressing situation (https://www.facebook.com/VaVetCenterQualityCareMatters).
+
+    The consequence of the VET Center Program’s unreasonable clinical performance metrics and excessive administrative workload policies being forced on counselors, combined with a shortage of clinicians, high caseloads, and increased counselor turnover rates; prevent veterans from getting adequate services, and especially puts suicidal veterans at higher risk.  Further, these mandates are not in compliance with the NASW Standards for Social Work Practice in Health Care Settings, and these performance standards exceed what research shows to be harmful to both clinicians and quality of care.  This is unethical and must be rectified to avoid further harm being done to clinical staff, and to mitigate the negative impact this has had on services for veterans and their families.
+
+    If this situation is not resolved, the health and well-being of clinical staff will continue to suffer which will impede their ability to deliver quality care, and this will result in veterans and their families not receiving adequate services which they deserve.  This should not be happening to our veterans and the counselors who care for them; and the VA/VET Center Program must be held accountable for this, and for threats and retaliation against employees who have spoken up to address these issues.
+
+    Therefore, it is requested that you help resolve this matter by considering the following courses of action:
+  1.	Having the VA/VET Center Program’s Clinical Visit Count and Productivity Standards Reduced to an Acceptable Level with a Greater Emphasis on Quality Care and Counselor Well-Being.
+  2.	Approving/Allocating Adequate Funding for the VET Center Program to Hire Enough Clinicians to Meet the Demand for Services and Decrease Excessive Caseloads.
+  3.	Passing Tough Legislation to Protect and Support Whistleblowers, with Severe Consequences for those who retaliate against them.
+
+  Your assistance and commitment in undertaking this important issue is greatly appreciated.
+
+  Very Respectfully,
+    ${firstName} ${lastName}`);
+  return (
+    <>
+      <BodyField multiline={true} value={finalBody} styles={{ field: { height: 300, width: 500 } }} componentRef={bodyRef} />
+
+      <ButtonContainer>
+        <PrimaryButton onClick={onEmailClick}>Copy Form Letter {"&"} Go To Website</PrimaryButton>
+        <DefaultButton onClick={onDismissModal}>Close</DefaultButton>
+      </ButtonContainer>
+    </>)
+}
+
+const SenatorModalContent = ({ firstName, lastName, senator, onDismissModal }: { firstName: string, lastName: string, senator: ISenatorMember, onDismissModal: () => void }) => {
   const { address } = senator;
   const bodyRef = useRef<any>();
   const onEmailClick = useCallback(() => {
@@ -129,15 +177,27 @@ const teachingPanesText: ITeachingPaneProps[] = [
 const EmailModal = ({ firstName, lastName, onDismissModal, lookup }: { firstName: string, lastName: string, onDismissModal: () => void, lookup: ILookupRepresentative }) => {
 
   const senators = useFindSenator(lookup)
+  const representatives = useFindRepresentative(lookup);
   const panes = useMemo(() => {
-    return senators ? senators.map(senator => ({
+    let panes = senators ? senators.map(senator => ({
       menuItem: `${senator.first_name} ${senator.last_name}`,
       render: () => (
         <Tab.Pane>
-          <ModalContent firstName={firstName} lastName={lastName} senator={senator} onDismissModal={onDismissModal} />
+          <SenatorModalContent firstName={firstName} lastName={lastName} senator={senator} onDismissModal={onDismissModal} />
         </Tab.Pane>)
     })) : []
-  }, [senators])
+    representatives && representatives.forEach( rep => {
+      panes.push({
+        menuItem: `${rep.first_name} ${rep.last_name}`,
+        render: () => (
+          <Tab.Pane>
+            <RepresentativeModalContent firstName={firstName} lastName={lastName} rep={rep} onDismissModal={onDismissModal} />
+          </Tab.Pane>
+        )
+      })
+    })
+    return panes;
+  }, [senators, representatives])
 
   const [showTeachingPanes, setShowTeachingPanes] = useState(true);
   const dismissTeachingPanes = useCallback(() => {
@@ -154,10 +214,14 @@ const EmailModal = ({ firstName, lastName, onDismissModal, lookup }: { firstName
       }
     }}>
       {showTeachingPanes && <TeachingPanes panes={teachingPanesText} onDismiss={dismissTeachingPanes} />}
-      {!!senators && !showTeachingPanes && <Tab panes={panes} />}
-      {!senators && !showTeachingPanes && (
+      {!!senators && !!representatives && !showTeachingPanes && <Tab panes={panes} />}
+      {(!senators || !representatives) && !showTeachingPanes && (
         <SpinnerContainer>
           <Spinner size={SpinnerSize.large} />
+          <ul>
+            <li>{ !senators ? "Searching for your senators" : "Found your senators."} </li>
+            {!representatives && <li>Searching for your representatives.</li>}
+          </ul>
         </SpinnerContainer>
       )}
     </Modal >
@@ -180,7 +244,7 @@ const Form: FunctionComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const onShowModal = useCallback(() => {
     let error = "Error!"
-    if (zip && state && firstName && lastName) {
+    if (zip && state && firstName && lastName && street && city) {
       setShowModal(true)
       return
     }
@@ -196,8 +260,14 @@ const Form: FunctionComponent = () => {
     if (!lastName) {
       error += "\nYou must enter your last name."
     }
+    if (!street) {
+      error += "\nYou must enter your street address."
+    }
+    if (!city) {
+      error += "\nYou must enter your city."
+    }
     setError({ message: error })
-  }, [setError, setShowModal, zip, state, firstName, lastName])
+  }, [setError, setShowModal, zip, state, firstName, lastName, street, city])
   const onDismissModal = useCallback(() => {
     setShowModal(false)
   }, [])
@@ -211,8 +281,8 @@ const Form: FunctionComponent = () => {
       <FormControlsContainer>
         <FirstNameField label="Your First Name"/>
         <LastNameField label="Your Last Name"/>
-        {/* <StreetAddressField label="Your Street Address" />
-        <CityField label="City" /> */}
+        <StreetAddressField label="Your Street Address" />
+        <CityField label="City" />
         <StatePicker placeholder="Select a state" value={query} searchQuery={query} />
         <ZipCodeField label="Zip Code"/>
         <ButtonContainer>

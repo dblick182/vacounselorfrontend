@@ -3,15 +3,7 @@ import BaseApi from "../components/Api/BaseApi";
 import { ILookupRepresentative } from "./types";
 import { settings } from "../settings";
 const url = `https://replookup.azurewebsites.net/api/findSenator?code=IzTgsDtOL4VGbISMns8IwMj7kadNvjuwOdT4iSf8KhcZfoxr3t4JXw==`;
-//method: POST
-//Content-Type: application/x-www-form-urlencoded
-/** Form Data
-street: 2149 NW Shy Bear Way
-city: Issaquah
-state: WAWashington
-Submit: FIND YOUR REP BY ADDRESS
-ZIP: 98027
- */
+
 
 export interface ISenatorMember {
   address: string;
