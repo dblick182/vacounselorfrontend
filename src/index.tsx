@@ -102,7 +102,7 @@ const ModalContent = ({ firstName, lastName, senator, onDismissModal }: { firstN
       <BodyField multiline={true} value={finalBody} styles={{ field: { height: 300, width: 500 } }} componentRef={bodyRef} />
 
       <ButtonContainer>
-        <PrimaryButton onClick={onEmailClick}>Copy Form Letter ${"&"} Go To Website</PrimaryButton>
+        <PrimaryButton onClick={onEmailClick}>Copy Form Letter {"&"} Go To Website</PrimaryButton>
         <DefaultButton onClick={onDismissModal}>Close</DefaultButton>
       </ButtonContainer>
     </>)
