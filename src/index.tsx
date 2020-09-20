@@ -74,7 +74,7 @@ const ModalContent = ({ firstName, lastName, senator, onDismissModal }: { firstN
   }, [bodyRef.current])
   const addressSplit = address.split(" ");
   const streetAddress = addressSplit.slice(0, addressSplit.length - 3).join(" ")
-  const secondAddressLine = addressSplit.slice(addressSplit.length - 2).join(", ")
+  const secondAddressLine = addressSplit.slice(addressSplit.length - 3).join(" ")
   const { TextField: EmailField, value: emailTo } = useTextField(senator.email);
   const { TextField: BodyField, value: finalBody } = useTextField(`  The Honorable ${senator.first_name} ${senator.last_name}
   ${streetAddress}
