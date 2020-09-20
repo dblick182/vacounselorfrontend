@@ -53,7 +53,7 @@ const SpinnerContainer = styled.div`
   justify-content:center;
 `
 
-const ModalContent = ({ firstName, lastName, senator, subject, onDismissModal }: { firstName: string, lastName: string, senator: ISenatorMember, subject?: string, onDismissModal: () => void }) => {
+const ModalContent = ({ firstName, lastName, senator, onDismissModal }: { firstName: string, lastName: string, senator: ISenatorMember, onDismissModal: () => void }) => {
   const { address } = senator;
   const bodyRef = useRef<any>();
   const onEmailClick = useCallback(() => {
@@ -76,12 +76,11 @@ const ModalContent = ({ firstName, lastName, senator, subject, onDismissModal }:
   const streetAddress = addressSplit.slice(0, addressSplit.length - 3).join(" ")
   const secondAddressLine = addressSplit.slice(addressSplit.length - 2).join(", ")
   const { TextField: EmailField, value: emailTo } = useTextField(senator.email);
-  const { TextField: SubjectField, value: finalSubject } = useTextField(subject);
-  const { TextField: BodyField, value: finalBody } = useTextField(`  The Honorable ${senator.first_name}, ${senator.last_name}
+  const { TextField: BodyField, value: finalBody } = useTextField(`  The Honorable ${senator.first_name} ${senator.last_name}
   ${streetAddress}
   ${secondAddressLine}
 
-  Senator ${senator.first_name}:
+  Senator ${senator.last_name}:
 
     I am one of your constituents who is very concerned about the quality of care for veterans that is being compromised in the VA’s VET Center Program due to excessive clinical production standards that were imposed on counselors by Readjustment Counseling Service (RCS) management, which has adversely effected the health and well-being of counselors and degraded their ability to provide quality services to veterans.  These issues were reported by national media organizations, and the broadcasts with associated web articles can be viewed through links which are available on a Facebook Page that was established to raise awareness regarding this distressing situation (https://www.facebook.com/VaVetCenterQualityCareMatters).
 
@@ -100,13 +99,10 @@ const ModalContent = ({ firstName, lastName, senator, subject, onDismissModal }:
     ${firstName} ${lastName}`);
   return (
     <>
-      {/* <EmailField label="Email To" value={emailTo} /> */}
-      <SubjectField label="Subject" value={finalSubject} />
-      <br />
       <BodyField multiline={true} value={finalBody} styles={{ field: { height: 300, width: 500 } }} componentRef={bodyRef} />
 
       <ButtonContainer>
-        <PrimaryButton onClick={onEmailClick}>Copy Email and Go To Senator's Website</PrimaryButton>
+        <PrimaryButton onClick={onEmailClick}>Copy Form Letter ${"&"} Go To Website</PrimaryButton>
         <DefaultButton onClick={onDismissModal}>Close</DefaultButton>
       </ButtonContainer>
     </>)
@@ -114,16 +110,23 @@ const ModalContent = ({ firstName, lastName, senator, subject, onDismissModal }:
 
 const teachingPanesText: ITeachingPaneProps[] = [
   {
-    text: `Unfortunately senator's and congress representatives do not openly share their email addresses.  However, you can email your senator or congress representative directly through their website`
-  },
-  {
-    text: `On the next page you will be able to select your senator or congress person.  An automatically generated email will appear, and a button on the bottom of the screen will copy this email to your clipboard and direct you to the senator/representatives website.`
-  },
-  {
-    text: `Please fill out the form to send an email to your senator/representatives, and paste the email generated here into the message of the form (you can paste with ctrl + v).`
+    text: (
+    <span>
+      Instructions:
+      <ul>
+        <li>An automated form letter will appear on next page.</li>
+        <li>Select your Senator.</li>
+        <li>Left Click on blue “Copy Form Letter &amp; Go To Website” button (this will copy letter to your clipboard/browser and direct you to Congress person’s website). </li>
+        <li>Left Click on blue “OK” button.</li>      
+        <li>Right Click/Paste letter into the message form on Congress person’s website.</li>
+        <li>Fill out rest of the form, as directed.</li>
+        <li>Left Click “Send/Submit.”</li>
+        <li>Repeat this procedure for your U.S. House Representative.</li>
+      </ul>
+    </span>)
   }
 ]
-const EmailModal = ({ firstName, lastName, subject, onDismissModal, lookup }: { firstName: string, lastName: string, subject?: string, onDismissModal: () => void, lookup: ILookupRepresentative }) => {
+const EmailModal = ({ firstName, lastName, onDismissModal, lookup }: { firstName: string, lastName: string, onDismissModal: () => void, lookup: ILookupRepresentative }) => {
 
   const senators = useFindSenator(lookup)
   const panes = useMemo(() => {
@@ -131,7 +134,7 @@ const EmailModal = ({ firstName, lastName, subject, onDismissModal, lookup }: { 
       menuItem: `${senator.first_name} ${senator.last_name}`,
       render: () => (
         <Tab.Pane>
-          <ModalContent firstName={firstName} lastName={lastName} senator={senator} subject={subject} onDismissModal={onDismissModal} />
+          <ModalContent firstName={firstName} lastName={lastName} senator={senator} onDismissModal={onDismissModal} />
         </Tab.Pane>)
     })) : []
   }, [senators])
@@ -161,7 +164,10 @@ const EmailModal = ({ firstName, lastName, subject, onDismissModal, lookup }: { 
   )
 }
 
-const ErrorMessage = styled.div``;
+const ErrorMessage = styled.div`
+  white-space: pre-line;
+  font-weight: bold;
+`;
 
 const Form: FunctionComponent = () => {
   const [error, setError] = useState<{ message: string } | undefined>(undefined)
@@ -173,37 +179,42 @@ const Form: FunctionComponent = () => {
   const { TextField: ZipCodeField, value: zip } = useTextField();
   const [showModal, setShowModal] = useState(false);
   const onShowModal = useCallback(() => {
-    if (zip && state) {
+    let error = "Error!"
+    if (zip && state && firstName && lastName) {
       setShowModal(true)
+      return
     }
-    else if (state) {
-      setError({ message: "You must enter your zip code" })
+    if (!zip) {
+      error += "\nYou must enter your zip code."
     }
-    else if (zip) {
-      setError({ message: "You must select your state of residence" })
+    if (!state) {
+      error += "\nYou must enter your state of residence."
     }
-    else {
-      setError({ message: "You must enter your zip code and select your state of residence" })
+    if (!firstName) {
+      error += "\nYou must enter your first name."
     }
-  }, [setError, setShowModal, zip, state])
+    if (!lastName) {
+      error += "\nYou must enter your last name."
+    }
+    setError({ message: error })
+  }, [setError, setShowModal, zip, state, firstName, lastName])
   const onDismissModal = useCallback(() => {
     setShowModal(false)
   }, [])
   const date = new Date();
-  const subject = "Veteran Care"
 
   return (
     <>
-      {showModal && <EmailModal firstName={firstName} lastName={lastName} subject={subject} onDismissModal={onDismissModal} lookup={{ zip, street, state: query, city, state_code: (state as any).data.Code }} />}
+      {showModal && <EmailModal firstName={firstName} lastName={lastName} onDismissModal={onDismissModal} lookup={{ zip, street, state: query, city, state_code: (state as any).data.Code }} />}
       <FormHeading>Congressional Form Letter</FormHeading>
       {error && (<ErrorMessage >{error.message}</ErrorMessage>)}
       <FormControlsContainer>
-        <FirstNameField label="Your First Name" />
-        <LastNameField label="Your Last Name" />
+        <FirstNameField label="Your First Name"/>
+        <LastNameField label="Your Last Name"/>
         {/* <StreetAddressField label="Your Street Address" />
         <CityField label="City" /> */}
         <StatePicker placeholder="Select a state" value={query} searchQuery={query} />
-        <ZipCodeField label="Zip Code" />
+        <ZipCodeField label="Zip Code"/>
         <ButtonContainer>
           <PrimaryButton onClick={onShowModal}>Generate Email</PrimaryButton>
         </ButtonContainer>

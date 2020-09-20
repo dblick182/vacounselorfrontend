@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { Icon, IconButton } from "office-ui-fabric-react";
 
 export interface ITeachingPaneProps {
-  text: string;
+  text: JSX.Element | string;
   className?: string;
 }
 
