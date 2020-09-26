@@ -11,7 +11,7 @@ export interface IRepResponse {
   representatives: IRepresentative[]
 }
 
-export const useFindRepresentative = ({ zip, street, city, state }: ILookupRepresentative) => {
+export const useFindRepresentative = ({ zip, street, city, state, state_code }: ILookupRepresentative) => {
   const [representatives, setReps] = useState<IRepresentative[] | undefined>()
   useMemo(() => {    
     const data = {
@@ -19,6 +19,7 @@ export const useFindRepresentative = ({ zip, street, city, state }: ILookupRepre
       street,
       city,
       state,
+      state_code
     }
     //request the data
     BaseApi.request(url, {

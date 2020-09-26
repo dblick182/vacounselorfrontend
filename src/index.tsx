@@ -79,9 +79,11 @@ const RepresentativeModalContent = ({ firstName, lastName, rep, onDismissModal }
 
     The consequence of the VET Center Program’s unreasonable clinical performance metrics and excessive administrative workload policies being forced on counselors, combined with a shortage of clinicians, high caseloads, and increased counselor turnover rates; prevent veterans from getting adequate services, and especially puts suicidal veterans at higher risk.  Further, these mandates are not in compliance with the NASW Standards for Social Work Practice in Health Care Settings, and these performance standards exceed what research shows to be harmful to both clinicians and quality of care.  This is unethical and must be rectified to avoid further harm being done to clinical staff, and to mitigate the negative impact this has had on services for veterans and their families.
 
+    The Government Accountability Office (GAO) investigated these issues within the VA VET Center Program during this past year, and they released their report on September 23, 2020 which substantiates these claims (https://www.gao.gov/products/GAO-20-652). They also made recommendations for corrective action.
+
     If this situation is not resolved, the health and well-being of clinical staff will continue to suffer which will impede their ability to deliver quality care, and this will result in veterans and their families not receiving adequate services which they deserve.  This should not be happening to our veterans and the counselors who care for them; and the VA/VET Center Program must be held accountable for this, and for threats and retaliation against employees who have spoken up to address these issues.
 
-    Therefore, it is requested that you help resolve this matter by considering the following courses of action:
+    Therefore, it is requested that you help resolve this matter through ensuring Congressional Oversight with the VA on implementation of the GAO recommendations, and also by considering the following courses of action:
   1.	Having the VA/VET Center Program’s Clinical Visit Count and Productivity Standards Reduced to an Acceptable Level with a Greater Emphasis on Quality Care and Counselor Well-Being.
   2.	Approving/Allocating Adequate Funding for the VET Center Program to Hire Enough Clinicians to Meet the Demand for Services and Decrease Excessive Caseloads.
   3.	Passing Tough Legislation to Protect and Support Whistleblowers, with Severe Consequences for those who retaliate against them.
@@ -130,20 +132,22 @@ const SenatorModalContent = ({ firstName, lastName, senator, onDismissModal }: {
 
   Senator ${senator.last_name}:
 
-    I am one of your constituents who is very concerned about the quality of care for veterans that is being compromised in the VA’s VET Center Program due to excessive clinical production standards that were imposed on counselors by Readjustment Counseling Service (RCS) management, which has adversely effected the health and well-being of counselors and degraded their ability to provide quality services to veterans.  These issues were reported by national media organizations, and the broadcasts with associated web articles can be viewed through links which are available on a Facebook Page that was established to raise awareness regarding this distressing situation (https://www.facebook.com/VaVetCenterQualityCareMatters).
+  I am one of your constituents who is very concerned about the quality of care for veterans that is being compromised in the VA’s VET Center Program due to excessive clinical production standards that were imposed on counselors by Readjustment Counseling Service (RCS) management, which has adversely effected the health and well-being of counselors and degraded their ability to provide quality services to veterans.  These issues were reported by national media organizations, and the broadcasts with associated web articles can be viewed through links which are available on a Facebook Page that was established to raise awareness regarding this distressing situation (https://www.facebook.com/VaVetCenterQualityCareMatters).
 
-    The consequence of the VET Center Program’s unreasonable clinical performance metrics and excessive administrative workload policies being forced on counselors, combined with a shortage of clinicians, high caseloads, and increased counselor turnover rates; prevent veterans from getting adequate services, and especially puts suicidal veterans at higher risk.  Further, these mandates are not in compliance with the NASW Standards for Social Work Practice in Health Care Settings, and these performance standards exceed what research shows to be harmful to both clinicians and quality of care.  This is unethical and must be rectified to avoid further harm being done to clinical staff, and to mitigate the negative impact this has had on services for veterans and their families.
+  The consequence of the VET Center Program’s unreasonable clinical performance metrics and excessive administrative workload policies being forced on counselors, combined with a shortage of clinicians, high caseloads, and increased counselor turnover rates; prevent veterans from getting adequate services, and especially puts suicidal veterans at higher risk.  Further, these mandates are not in compliance with the NASW Standards for Social Work Practice in Health Care Settings, and these performance standards exceed what research shows to be harmful to both clinicians and quality of care.  This is unethical and must be rectified to avoid further harm being done to clinical staff, and to mitigate the negative impact this has had on services for veterans and their families.
 
-    If this situation is not resolved, the health and well-being of clinical staff will continue to suffer which will impede their ability to deliver quality care, and this will result in veterans and their families not receiving adequate services which they deserve.  This should not be happening to our veterans and the counselors who care for them; and the VA/VET Center Program must be held accountable for this, and for threats and retaliation against employees who have spoken up to address these issues.
+  The Government Accountability Office (GAO) investigated these issues within the VA VET Center Program during this past year, and they released their report on September 23, 2020 which substantiates these claims (https://www.gao.gov/products/GAO-20-652). They also made recommendations for corrective action.
 
-    Therefore, it is requested that you help resolve this matter by considering the following courses of action:
-  1.	Having the VA/VET Center Program’s Clinical Visit Count and Productivity Standards Reduced to an Acceptable Level with a Greater Emphasis on Quality Care and Counselor Well-Being.
-  2.	Approving/Allocating Adequate Funding for the VET Center Program to Hire Enough Clinicians to Meet the Demand for Services and Decrease Excessive Caseloads.
-  3.	Passing Tough Legislation to Protect and Support Whistleblowers, with Severe Consequences for those who retaliate against them.
+  If this situation is not resolved, the health and well-being of clinical staff will continue to suffer which will impede their ability to deliver quality care, and this will result in veterans and their families not receiving adequate services which they deserve.  This should not be happening to our veterans and the counselors who care for them; and the VA/VET Center Program must be held accountable for this, and for threats and retaliation against employees who have spoken up to address these issues.
 
-  Your assistance and commitment in undertaking this important issue is greatly appreciated.
+  Therefore, it is requested that you help resolve this matter through ensuring Congressional Oversight with the VA on implementation of the GAO recommendations, and also by considering the following courses of action:
+1.	Having the VA/VET Center Program’s Clinical Visit Count and Productivity Standards Reduced to an Acceptable Level with a Greater Emphasis on Quality Care and Counselor Well-Being.
+2.	Approving/Allocating Adequate Funding for the VET Center Program to Hire Enough Clinicians to Meet the Demand for Services and Decrease Excessive Caseloads.
+3.	Passing Tough Legislation to Protect and Support Whistleblowers, with Severe Consequences for those who retaliate against them.
 
-  Very Respectfully,
+Your assistance and commitment in undertaking this important issue is greatly appreciated.
+
+Very Respectfully,
     ${firstName} ${lastName}`);
   return (
     <>
